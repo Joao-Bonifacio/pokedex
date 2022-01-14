@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokedex</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: aqua;
+        }
+        .main{
+            background-color: white;
+            width: 500px;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 15px;
+        }
+        .container{
+            display: flex;
+            flex-wrap: wrap;
+            padding-left: 15px;
+        }
+        .main>h2{
+            text-align: center;
+        }
+        .content{
+            width: 100px;
+            background-color: rgb(214, 210, 210);
+            border-radius: 5px;
+            margin: 10px 4px;
+        }
+        .content>p{
+            text-align: center;
+        }
+        img{
+            width: 100%;
+        }
+        @media screen and (max-width:550px) {
+            .main{
+                width: 90%;
+            }
+            .container{
+                display: flex;
+                flex-wrap: wrap;
+                margin: auto;
+                width: 400px;
+            }
+            .content{
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main">
+        <h2>Pokedex</h2>
+        <div style="width: 300px;margin:0 auto;padding-left: 60px;">
+            <input type="number" placeholder="insira a quantidade">
+        </div>
+        <div class="container"></div>
+    </div>  
+    <script>
+        const getPk =(howmuch)=>{
+            var box = document.querySelector('.container')
+            box.innerHTML = ''
+            fetch('https://pokeapi.co/api/v2/pokemon?limit='+howmuch).then(response => response.json()).then(allpokemon => {
+
+                var pokemons = []
+
+                allpokemon.results.map((val)=>{
+                    fetch(val.url).then(response => response.json()).then(pokemon => {
+                        //para acessar a outra url retornada no fetch anterior
+                        //onde se encontra as imagens
+                        pokemons.push({nome:val.name,imagem:pokemon.sprites.front_default})
+
+                        if (pokemons.length == howmuch) {
+                            pokemons.map((val)=>{
+                                box.innerHTML +=
+                                `<div class="content">
+                                    <img src="`+val.imagem+`" alt="">
+                                    <p>`+val.nome+`</p>
+                                </div>`
+                            })
+                        } //para não duplicar os resultados 
+                    })
+                })
+            })
+        }
+        var change = document.querySelector('input')
+        change.addEventListener('keyup',()=>{
+            getPk(change.value)
+        })
+        getPk(12)
+    </script>
+</body>
+</html>
